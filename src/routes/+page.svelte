@@ -1,31 +1,34 @@
 <script lang="ts">
-	import * as List from '$lib/components/views/List.svelte';
-	import * as Slide from '$lib/components/views/Slide.svelte';
-	import { files } from '$lib/services/files';
-	import { target } from '$lib/services/target';
-	import type { ComponentType, SvelteComponentTyped } from 'svelte';
-	type View = {
-		default: ComponentType<SvelteComponentTyped<{ images: string[] }>>;
-		viewName: string;
-	};
+	import { image } from '$lib/service/image';
+	import type { Snapshot } from './$types';
 
-	const views = [List, Slide] as const satisfies readonly View[];
-	const viewMap = Object.fromEntries(
-		views.map((Comp) => [Comp.viewName, Comp.default])
-	);
-	let view = Slide.viewName;
-
-	const onTargetChange = (ev: CustomEvent<{ path: string }>) => {
-		target.set(ev.detail.path);
+	export const snapshot: Snapshot<number> = {
+		capture: () => window.scrollY,
+		restore: (scrollY) => window.scrollTo({ top: scrollY }),
 	};
 </script>
 
-<svelte:component
-	this={viewMap[view]}
-	images={$files}
-	target={$target?.path}
-	on:targetchange={onTargetChange}
-/>
+{#await $image.getIdList()}
+	loading...
+{:then idList}
+	<ul>
+		{#each idList as id (id)}
+			<li>
+				{#await $image.getUrl(id) then url}
+					<img src={url} alt="" class="thumbnail" loading="lazy" />
+				{/await}
+				<a href="/image/{encodeURIComponent(id)}">
+					{id}
+				</a>
+			</li>
+		{/each}
+	</ul>
+{:catch e}
+	{e instanceof Error ? e.message : e}
+{/await}
 
 <style>
+	.thumbnail {
+		height: 1em;
+	}
 </style>

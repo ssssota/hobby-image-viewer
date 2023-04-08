@@ -3,9 +3,10 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "vite preview",
+		"vite-dev": "vite dev",
+		"vite-build": "vite build",
+		"dev": "tauri dev",
+		"build": "tauri build",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
@@ -31,10 +32,9 @@
 		"vite": "^4.0.0"
 	},
 	"type": "module",
-	"packageManager": "pnpm@7.29.1",
+	"packageManager": "pnpm@8.1.1",
 	"dependencies": {
 		"@tauri-apps/api": "^1.2.0",
-		"exifr": "^7.1.3",
-		"requestidlecallback-polyfill": "^1.0.2"
+		"exifr": "^7.1.3"
 	}
 }
