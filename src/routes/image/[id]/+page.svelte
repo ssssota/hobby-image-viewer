@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import Dump from '$lib/components/Dump.svelte';
 	import { image } from '$lib/service/image';
 	import { loadExif } from '$lib/service/image/utils';
@@ -6,7 +7,7 @@
 	export let data: PageData;
 
 	const informationWidth = 500;
-	let open = true;
+	let open = false;
 </script>
 
 <section
@@ -16,7 +17,11 @@
 	"
 >
 	<button class="image-container" on:click={() => (open = !open)}>
-		<img src={data.url} alt={data.id} />
+		{#await $image.getUrl(data.id).catch(() => goto('/'))}
+			...
+		{:then url}
+			<img src={url ?? undefined} alt={data.id} />
+		{/await}
 	</button>
 
 	<aside>
