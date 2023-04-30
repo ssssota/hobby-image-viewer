@@ -25,8 +25,14 @@ type Options = {
 	extractSdParameters?: boolean;
 };
 
-export const loadExif = async (data: Uint8Array, options: Options) => {
-	const result = await exifr.parse(data, true);
+export const loadExif = async (
+	data: HTMLImageElement,
+	options: Options = {}
+) => {
+	const result = await exifr.parse(data, {
+		...exifr.Options.default,
+		ifd1: true,
+	});
 	if (!options.extractSdParameters) return result;
 
 	const params = result.parameters;

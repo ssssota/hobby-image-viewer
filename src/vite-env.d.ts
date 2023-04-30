@@ -1,13 +1,5 @@
-// See https://kit.svelte.dev/docs/types#app
-// for information about these interfaces
-declare global {
-	namespace App {
-		// interface Error {}
-		// interface Locals {}
-		// interface PageData {}
-		// interface Platform {}
-	}
-}
+/// <reference types="svelte" />
+/// <reference types="vite/client" />
 
 // https://github.com/uhyo/better-typescript-lib/blob/5ccaad358d8495528186acd8dcf88f38283cf55b/generated/lib.es2017.object.d.ts
 interface ObjectConstructor {
@@ -25,5 +17,3 @@ interface ObjectConstructor {
 		[x: PropertyKey]: PropertyDescriptor;
 	};
 }
-
-export {};

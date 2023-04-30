@@ -1,14 +1,40 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { push } from 'svelte-spa-router';
 	import Dump from '$lib/components/Dump.svelte';
 	import { image } from '$lib/service/image';
 	import { loadExif } from '$lib/service/image/utils';
-	import type { PageData } from './$types';
-	export let data: PageData;
+
+	export let params = {};
 
 	const informationWidth = 500;
 	let open = false;
+
+	let metadata: Promise<Record<string, unknown>> | undefined;
+
+	const onKeydown = (e: KeyboardEvent) => {
+		console.log(e);
+		switch (e.code) {
+			case 'Escape':
+				push('/');
+				break;
+			case 'Space':
+				$image.getIdList().then((list) => {
+					const index = list.indexOf(params.id);
+					if (index === -1) return;
+					const next = list[(index + 1) % list.length];
+					return push(`/image/${encodeURIComponent(next)}`);
+				});
+				break;
+		}
+	};
+	const onImageLoad = (e: Event) => {
+		const { target } = e;
+		if (!(target instanceof HTMLImageElement)) return;
+		metadata = loadExif(target);
+	};
 </script>
+
+<svelte:window on:keydown|preventDefault={onKeydown} />
 
 <section
 	style="
@@ -17,24 +43,26 @@
 	"
 >
 	<button class="image-container" on:click={() => (open = !open)}>
-		{#await $image.getUrl(data.id).catch(() => goto('/'))}
+		{#await $image.getUrl(params.id).catch(() => push('/'))}
 			...
 		{:then url}
-			<img src={url ?? undefined} alt={data.id} />
+			<img src={url ?? undefined} alt={params.id} on:load={onImageLoad} />
 		{/await}
 	</button>
 
 	<aside>
 		<div>
-			{#await $image
-				.getData(data.id)
-				.then((buf) => loadExif(buf, { extractSdParameters: true }))}
+			{#if metadata}
+				{#await metadata}
+					loading...
+				{:then value}
+					<Dump key={params.id} {value} />
+				{:catch e}
+					{e instanceof Error ? e.message : e}
+				{/await}
+			{:else}
 				loading...
-			{:then value}
-				<Dump key={data.id} {value} />
-			{:catch e}
-				{e instanceof Error ? e.message : e}
-			{/await}
+			{/if}
 		</div>
 	</aside>
 </section>

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { image } from '$lib/service/image';
 	import type { Snapshot } from './$types';
+	import { link } from 'svelte-spa-router';
 
 	export const snapshot: Snapshot<number> = {
 		capture: () => window.scrollY,
@@ -20,7 +21,7 @@
 					{#await $image.getUrl(id) then url}
 						<img src={url} alt="" class="thumbnail" loading="lazy" />
 					{/await}
-					<a href="/image/{encodeURIComponent(id)}">
+					<a href="/image/{encodeURIComponent(id)}" use:link>
 						{id}
 					</a>
 				</li>

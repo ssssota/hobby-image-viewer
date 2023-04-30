@@ -8,6 +8,11 @@
 		<span class="key">{key}</span>:
 		<span class="value">{`${value}`.trim()}</span>
 	</div>
+{:else if ArrayBuffer.isView(value)}
+	<div>
+		<span class="key">{key}</span>:
+		<span class="value">{value.constructor.name} [{value.byteLength}]</span>
+	</div>
 {:else if typeof value === 'object'}
 	<div>
 		<span class="key">{key}</span>:
